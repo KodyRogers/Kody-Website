@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>F1 Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Link external CSS -->
+<link rel="stylesheet" href="/static/css/styles.css">
+</head>
+
+    <body>
+
+    <header>
+        🏎️ F1 Dashboard
+    </header>
+
+    <div class="container">
+
+    <div class="card">
+        <h2>Race Results</h2>
+        <input id="raceYear" placeholder="Year (2024)">
+        <input id="raceGP" placeholder="Grand Prix (Monza)">
+        <button onclick="getRace()">Load Race</button>
+
+        <div id="raceOutput"></div>
+    </div>
+
+    <div class="card">
+        <h2>Driver Laps</h2>
+        <input id="driverYear" placeholder="Year">
+        <input id="driverGP" placeholder="Grand Prix">
+        <input id="driverCode" placeholder="Driver (VER)">
+        <button onclick="getDriver()">Load Driver</button>
+
+        <div id="driverOutput"></div>
+    </div>
+
+    </div>
+
+    <script>
+    async function getRace() {
+    const year = document.getElementById("raceYear").value;
+    const gp = document.getElementById("raceGP").value;
+    const output = document.getElementById("raceOutput");
+
+    output.innerHTML = "Loading...";
+
+    const res = await fetch(`/race/${year}/${gp}`);
+    const data = await res.json();
+
+    let html = `<h3>${data.race}</h3>`;
+    html += "<table><tr><th>Pos</th><th>Driver</th><th>Team</th><th>Time</th></tr>";
+
+    data.results.forEach(d => {
+        html += `<tr>
+        <td>${d.position}</td>
+        <td>${d.driver}</td>
+        <td>${d.team}</td>
+        <td>${d.time}</td>
+        </tr>`;
+    });
+
+    html += "</table>";
+    output.innerHTML = html;
+    }
+
+    async function getDriver() {
+    const year = document.getElementById("driverYear").value;
+    const gp = document.getElementById("driverGP").value;
+    const code = document.getElementById("driverCode").value;
+    const output = document.getElementById("driverOutput");
+
+    output.innerHTML = "Loading...";
+
+    const res = await fetch(`/driver/${year}/${gp}/${code}`);
+    const data = await res.json();
+
+    let html = `<h3>${data.driver}</h3>`;
+    html += "<table><tr><th>Lap</th><th>Time</th></tr>";
+
+    data.laps.forEach(lap => {
+        html += `<tr>
+        <td>${lap.lap}</td>
+        <td>${lap.time}</td>
+        </tr>`;
+    });
+
+    html += "</table>";
+    output.innerHTML = html;
+    }
+    </script>
+
+    </body>
+</html>
