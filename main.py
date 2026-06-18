@@ -11,10 +11,9 @@ import os
 # -------------------------------
 # Setup cache (safe)
 # -------------------------------
-if not os.path.exists("cache"):
-    os.makedirs("cache")
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CACHE_DIR = os.path.join(BASE_DIR, "cache")
+os.makedirs(CACHE_DIR, exist_ok=True)
 fastf1.Cache.enable_cache(CACHE_DIR)
 
 # -------------------------------
@@ -65,14 +64,11 @@ async def get_race_results(year: int, gp: str):
 
         data = []
         for _, driver in results.iterrows():
-            time = driver['Time']
-            if (time == "DNF") or (time == "DNS") or (time == "DSQ"):
-                time = "N/A"
             data.append({
                 "position": int(driver['Position']),
                 "driver": driver['Abbreviation'],
                 "team": driver['TeamName'],
-                "time": str(time)
+                "time": str(driver['Time']) if driver['Time'] else "N/A"
             })
 
         return {"race": f"{year} {gp}", "results": data}
